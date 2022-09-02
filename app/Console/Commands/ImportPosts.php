@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Post;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
@@ -39,14 +40,13 @@ class ImportPosts extends Command
             $response = Http::get(config('services.blog_rest_url'));
             $posts = $response->json()['articles'];
             foreach ($posts as $post) {
-                $existPost = Post::where('id', $post['id'])->get();
-                if ($existPost->count() > 0) {
-                    $this->line('Post with ID: '.$post['id'].' already exists');
-                } else {
+                $existPost = Post::where('id', $post['id'])->first();
+                if (! $existPost) {
                     $admin->posts()->create([
                         'id' => $post['id'],
                         'title' => $post['title'],
                         'description' => $post['description'],
+                        'published_at' => Carbon::parse($post['publishedAt']),
                     ]);
                     $this->line('Post created with title: '.$post['title']);
                 }

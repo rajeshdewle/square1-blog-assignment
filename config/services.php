@@ -31,4 +31,6 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'blog_rest_url' => env('BLOG_API_URL'),
+
 ];
